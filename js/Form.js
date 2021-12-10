@@ -1,20 +1,20 @@
-class Form  {
-    constructor (divId, data) {
+class Form {
+    constructor(divId, data) {
         this.divId = divId;
         this.data = data;
     }
 
-    showDiv(divId){
+    showDiv(divId) {
         document.getElementById('show').innerHTML = `<div id = ${divId}></div>`;
     }
-    insertTemplate(divId, data) { 
+    insertTemplate(divId, data) {
         document.getElementById('show').innerHTML = null;
         this.showDiv(divId);
 
         const markup = new Markup();
         markup.show(divId);
 
-        switch(divId){
+        switch (divId) {
             case 'auth':
                 const auth = new Auth();
                 auth.render();
@@ -27,7 +27,15 @@ class Form  {
                 const menu = new Menu(data);
                 menu.render();
                 break;
+            case 'game':
+                const game = new Game();
+                game.render();
+                break;
+            case 'mapList':
+                const mapList = new MapList();
+                mapList.render();
+                break;
         }
-        
+
     }
 }

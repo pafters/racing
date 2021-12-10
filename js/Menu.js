@@ -1,10 +1,10 @@
-class Menu { 
+class Menu {
     constructor(userData) {
         this.divId = 'menu';
         this.userData = userData;
     }
 
-    funcsBtn(){
+    funcsBtn() {
         const form = new Form();
         let info = this.userData;
         if (info) {
@@ -13,10 +13,16 @@ class Menu {
                     `api/?method=logout&token=${token}`
                 );
             }
-    
+
             const logOutBtn = document.getElementById('logOutBtn');
-    
-            logOutBtn.addEventListener('click', async function() {
+            const mapListBtn = document.getElementById('mapListBtn');
+
+            mapListBtn.addEventListener('click', function () {
+                const mapList = new MapList();
+                form.insertTemplate(mapList.divId);
+            })
+
+            logOutBtn.addEventListener('click', async function () {
                 console.log(info)
                 if (info) {
                     await logout(info.token);
@@ -26,14 +32,14 @@ class Menu {
                 form.insertTemplate(auth.divId);
             });
         }
-        
+
     }
 
 
-    render(){
+    render() {
         const menuDiv = document.getElementById(`${this.divId}`);
         if (menuDiv) {
             this.funcsBtn();
-        } 
+        }
     }
 }

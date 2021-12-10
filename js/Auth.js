@@ -3,14 +3,14 @@ class Auth {
         this.divId = 'auth';
     }
 
-    funcsBtn(){
+    funcsBtn() {
         const output = document.getElementById('output');
         const loginInput = document.getElementById('login');
         const loginBtn = document.getElementById('loginBtn');
         const passwordInput = document.getElementById('password');
         const signupBtn = document.getElementById('signupBtn');
         const form = new Form();
-        
+
         async function getLoginAndPassword(login, password) {
             const answer = await fetch(
                 `api/?method=login&login=${login}&password=${password}`
@@ -30,13 +30,14 @@ class Auth {
             if (answer['data'].token) {
                 const menu = new Menu();
                 form.insertTemplate(menu.divId, answer['data']);
-            } else output.innerHTML = 'Введены неверные авторизационные данные!'; 
+                localStorage.setItem('token', answer['data'].token);
+            } else output.innerHTML = 'Введены неверные авторизационные данные!';
         });
     }
 
-    render() { 
+    render() {
         const authDiv = document.getElementById(`${this.divId}`);
-        if(authDiv) {
+        if (authDiv) {
             //this.authElem();
             this.funcsBtn();
         }

@@ -1,10 +1,10 @@
 class Markup {
-    constructor () {
+    constructor() {
     }
 
-    show (divId){
-        switch (divId){
-            case 'auth' : 
+    show(divId) {
+        switch (divId) {
+            case 'auth':
                 const authDiv = document.getElementById(`${divId}`);
                 authDiv.classList.add('internalDiv');
                 authDiv.innerHTML = `
@@ -20,7 +20,7 @@ class Markup {
                     <button class = "btn" id = "signupBtn">Зарегистрироваться</button>
                 `;
                 break;
-            case 'signup' :
+            case 'signup':
                 const signupDiv = document.getElementById(`${divId}`);
                 signupDiv.classList.add('internalDiv');
                 signupDiv.innerHTML = `
@@ -40,13 +40,35 @@ class Markup {
                     <button class = "btn" id = "loginBtn">Вернуться</button>
                 `;
                 break;
-            case 'menu' :
+            case 'menu':
                 const menuDiv = document.getElementById(`${divId}`);
                 menuDiv.classList.add('internalDiv');
                 menuDiv.innerHTML = `
                     <p id ="textInfo">Меню</p>
                     <br>
+                    <button class = "btn" id = "mapListBtn">Список карт</button>
+                    <br>
                     <button class = "btn" id = "logOutBtn">Выйти</button>
+                `;
+                break;
+            case 'game':
+                const gameDiv = document.getElementById(`${divId}`);
+                gameDiv.classList.add('gameDiv');
+                break;
+            case 'mapList':
+                const mapListDiv = document.getElementById(`${divId}`);
+                mapListDiv.classList.add('internalDiv');
+                mapListDiv.innerHTML = `
+                    <p id ="textInfo">Список комнат</p>
+                    <br>
+                    <button  class = "btn" id = "checkRoomsBtn" >Обновить</button>
+                    <br>
+                    <div id = "rooms" ></div>
+                    <br>
+                    <button  class = "btn" id = "menuBtn" >Вернуться</button>
+                    <br>
+                    <input id = "roomNameInp" class = "inp" placeholder = "Введите имя комнаты">
+                    <button  class = "btn" id = "createRoomBtn" >Создать комнату</button>
                 `;
                 break;
         }

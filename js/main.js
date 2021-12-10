@@ -1,4 +1,4 @@
-window.onload = async function() {
+window.onload = async function () {
     async function getPlan() {
         const answer = await fetch(
             `api/?method=checkCookie`
@@ -10,7 +10,7 @@ window.onload = async function() {
         const form = new Form();
         let answer = await getPlan();
         if (answer) {
-            if (answer['data']){
+            if (answer['data']) {
                 const menu = new Menu();
                 form.insertTemplate(menu.divId, answer['data']);
             } else {
@@ -18,7 +18,7 @@ window.onload = async function() {
                 form.insertTemplate(auth.divId);
             }
         }
-        
+
     }
     start();
 }
