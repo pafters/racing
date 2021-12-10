@@ -11,8 +11,8 @@ window.onload = async function () {
         let answer = await getPlan();
         if (answer) {
             if (answer['data']) {
-                const menu = new Menu();
-                form.insertTemplate(menu.divId, answer['data']);
+                const mapList = new MapList();
+                form.insertTemplate(mapList.divId, answer['data']);
             } else {
                 const auth = new Auth();
                 form.insertTemplate(auth.divId);

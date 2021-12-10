@@ -1,11 +1,33 @@
 class MapList {
-    constructor() {
+    constructor(data) {
         this.divId = 'mapList';
-        this.token = localStorage.getItem('token');
+        this.data = data;
+    }
+
+    logout() {
+        let data = this.data;
+        const form = new Form();
+
+        if (data) {
+            async function logout(token) {
+                await fetch(
+                    `api/?method=logout&token=${token}`
+                );
+            }
+            const logOutBtn = document.getElementById('logOutBtn');
+
+            logOutBtn.addEventListener('click', async function () {
+                if (data) {
+                    await logout(data['token']);
+                }
+                data = null;
+                const auth = new Auth();
+                form.insertTemplate(auth.divId);
+            });
+        }
     }
 
     joinArrival() {
-        var countClick = 0;
         //тут будет написан запрос в бэк на подключение к комнате и выход из нее
         document.addEventListener('click', function (e) { //тут мы получаем id комнаты для "подключения" к ней
 
@@ -34,20 +56,11 @@ class MapList {
     }
 
     rooms() {
-        const menuBtn = document.getElementById('menuBtn');
         const rooms = document.getElementById('rooms');
         const checkRoomsBtn = document.getElementById('checkRoomsBtn');
         const createRoomBtn = document.getElementById('createRoomBtn');
 
-        const form = new Form();
-        roomsListUpdate(this.token);
-
-        async function getUser() {
-            const answer = await fetch(
-                `api/?method=checkCookie`
-            );
-            return await answer.json();
-        }
+        roomsListUpdate(this.data['token']);
 
         async function getAllRooms(token) {
             const answer = await fetch(
@@ -80,20 +93,12 @@ class MapList {
         }
 
         checkRoomsBtn.addEventListener('click', async () => { //обновление комнат на кнопку
-            roomsListUpdate(this.token);
-        });
-
-        menuBtn.addEventListener('click', async function () { //возврат в меню
-            let answer = await getUser();
-            if (answer) {
-                const menu = new Menu();
-                form.insertTemplate(menu.divId, answer['data']);
-            }
+            roomsListUpdate(this.data['token']);
         });
 
         createRoomBtn.addEventListener('click', async () => { //кнопка создания комнаты
             let roomName = document.getElementById('roomNameInp').value;
-            await createRoom(this.token, roomName);
+            await createRoom(this.data['token'], roomName);
         });
     }
 
@@ -101,6 +106,7 @@ class MapList {
         const mapListDiv = document.getElementById(this.divId);
         if (mapListDiv) {
             this.rooms();
+            this.logout()
             this.joinArrival();
         }
     }

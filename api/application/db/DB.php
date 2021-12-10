@@ -102,8 +102,10 @@ class DB
     public function removeRacer($token)
     {
         $user = $this->getUserByToken($token);
-        $racer = $this->getRacerByUserId($user->id);
-        $this->db->query("DELETE FROM `racer` WHERE `racer`.`id` = ".$racer->id);
+        if ($user)
+            $racer = $this->getRacerByUserId($user->id);
+        if ($racer)
+            $this->db->query("DELETE FROM `racer` WHERE `racer`.`id` = " . $racer->id);
     }
 
     /***************/
@@ -125,7 +127,8 @@ class DB
     /****arrivals****/
     /****************/
 
-    public function getAllArrivals() {
+    public function getAllArrivals()
+    {
         $query = "SELECT * FROM arrival";
         $stmt = $this->db->query($query);
         $result = array();

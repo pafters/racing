@@ -40,17 +40,17 @@ class Markup {
                     <button class = "btn" id = "loginBtn">Вернуться</button>
                 `;
                 break;
-            case 'menu':
-                const menuDiv = document.getElementById(`${divId}`);
-                menuDiv.classList.add('internalDiv');
-                menuDiv.innerHTML = `
-                    <p id ="textInfo">Меню</p>
-                    <br>
-                    <button class = "btn" id = "mapListBtn">Список карт</button>
-                    <br>
-                    <button class = "btn" id = "logOutBtn">Выйти</button>
-                `;
-                break;
+            //case 'menu':
+            //    const menuDiv = document.getElementById(`${divId}`);
+            //    menuDiv.classList.add('internalDiv');
+            //    menuDiv.innerHTML = `
+            //        <p id ="textInfo">Меню</p>
+            //        <br>
+            //        <button class = "btn" id = "mapListBtn">Список карт</button>
+            //        <br>
+            //        
+            //    `;
+            //    break;
             case 'game':
                 const gameDiv = document.getElementById(`${divId}`);
                 gameDiv.classList.add('gameDiv');
@@ -65,7 +65,7 @@ class Markup {
                     <br>
                     <div id = "rooms" ></div>
                     <br>
-                    <button  class = "btn" id = "menuBtn" >Вернуться</button>
+                    <button class = "btn" id = "logOutBtn">Выйти</button>
                     <br>
                     <input id = "roomNameInp" class = "inp" placeholder = "Введите имя комнаты">
                     <button  class = "btn" id = "createRoomBtn" >Создать комнату</button>

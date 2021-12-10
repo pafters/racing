@@ -28,9 +28,9 @@ class Auth {
             let password = passwordInput.value;
             let answer = await getLoginAndPassword(login, password);
             if (answer['data'].token) {
-                const menu = new Menu();
-                form.insertTemplate(menu.divId, answer['data']);
-                localStorage.setItem('token', answer['data'].token);
+                const mapList = new MapList();
+                form.insertTemplate(mapList.divId, answer['data']);
+                //localStorage.setItem('token', answer['data'].token);
             } else output.innerHTML = 'Введены неверные авторизационные данные!';
         });
     }

@@ -23,16 +23,16 @@ class Form {
                 const signup = new Signup();
                 signup.render();
                 break;
-            case 'menu':
-                const menu = new Menu(data);
-                menu.render();
-                break;
+            //case 'menu':
+            //    const menu = new Menu(data);
+            //    menu.render();
+            //    break;
             case 'game':
                 const game = new Game();
                 game.render();
                 break;
             case 'mapList':
-                const mapList = new MapList();
+                const mapList = new MapList(data);
                 mapList.render();
                 break;
         }
