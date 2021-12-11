@@ -28,13 +28,27 @@ class MapList {
     }
 
     joinArrival() {
+        const token = this.data['token'];
+
+        async function join(token, roomId) {
+            await fetch(
+                `api/?method=joinArrival&token=${token}&id=${roomId}`
+            );
+        }
+
         //тут будет написан запрос в бэк на подключение к комнате и выход из нее
-        document.addEventListener('click', function (e) { //тут мы получаем id комнаты для "подключения" к ней
+        document.addEventListener('click', async function (e) { //тут мы получаем id комнаты для "подключения" к ней
 
             if (!e.target.classList.contains('roomDiv')) {
                 return
             } else {
+
                 const elements = document.getElementsByClassName('entered');
+                //console.log(token);
+                const roomId = e.target.value;
+                console.log(roomId);
+                await join(token, roomId);
+
                 if (elements.length == 1) {
                     document.getElementById(`${e.target.id}`).classList.remove('entered');
                     if (elements[0]) {
@@ -87,6 +101,7 @@ class MapList {
                     div.id = `room${i}`;
                     div.classList.add('roomDiv');
                     document.getElementById('rooms').appendChild(div);
+                    div.value = roomList[i].id;
                     div.innerHTML = roomList[i].name; //тут должно начинаться заполнение блока комнаты (имя, статус, кол. игроков, название трассы)
                 }
             }
