@@ -6,13 +6,14 @@ class Users
         $this->db = $db;
     }
 
-    public function login($login, $password) {
+    public function login($login, $password)
+    {
         $user = $this->db->getUser($login);
         if ($user) {
             $user->token = $this->db->addToken($user->id);
             if ($password == $user->password) {
                 $token = $user->token; //
-                setcookie('token',$token, 0, '/'); //добавили куки
+                setcookie('token', $token, 0, '/'); //добавили куки
                 return $user;
             }
         }
@@ -36,13 +37,15 @@ class Users
         setcookie('token', null, -1, '/');
     }
 
-    public function getUserByToken($token) {
+    public function getUserByToken($token)
+    {
         $user = $this->db->getUserByToken($token);
         if ($user) {
             return array(
+                'id' => $user->id,
                 'name' => $user->name,
                 'token' => $user->token
-            );; 
+            );;
         }
     }
 
@@ -53,7 +56,7 @@ class Users
     public function checklog($login) //Проверка на наличие логина в базе данных при регистрации
     {
         $user = $this->db->getUser($login);
-        if($user) {
+        if ($user) {
             return array(
                 'status' => false,
             );
@@ -63,5 +66,4 @@ class Users
             );
         }
     }
-
 }

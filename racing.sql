@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Дек 10 2021 г., 13:09
+-- Время создания: Дек 23 2021 г., 18:00
 -- Версия сервера: 8.0.24
 -- Версия PHP: 7.1.33
 
@@ -43,9 +43,10 @@ CREATE TABLE `arrival` (
 --
 
 INSERT INTO `arrival` (`id`, `name`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES
-(3, 'sdda', 1, '', NULL, NULL, NULL, NULL),
-(4, 'sddasss', 1, '', NULL, NULL, NULL, NULL),
-(6, 'dfdd', 1, '', NULL, NULL, NULL, NULL);
+(9, 'weeewgd', 1, 'open', 107, 107, 107, NULL),
+(10, 'idk', 1, 'open', NULL, NULL, NULL, NULL),
+(12, 'sdfs', 1, 'racing', 107, 107, 107, 107),
+(13, 'апвв', 1, 'racing', 107, 107, 107, 107);
 
 -- --------------------------------------------------------
 
@@ -95,7 +96,8 @@ CREATE TABLE `racer` (
 INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES
 (104, 1, NULL, NULL, NULL, NULL),
 (105, 2, NULL, NULL, NULL, NULL),
-(106, 2, NULL, NULL, NULL, NULL);
+(106, 2, NULL, NULL, NULL, NULL),
+(107, 15, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -126,7 +128,7 @@ INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 (12, 'жижа', 'THUNDER8000', 'alcozelcer', NULL),
 (13, 'Violet', 'katyaToWin', 'queennn', NULL),
 (14, 'Nicky', 'youdontknowme', 'ammastar', NULL),
-(15, 'reeeeee', 'edic', '124sa', 'de6010778a34327d215f3cb6edb1f101');
+(15, 'reeeeee', 'edic', '124sa', '1a817a84284702280490f152e59d1cc3');
 
 --
 -- Индексы сохранённых таблиц
@@ -165,7 +167,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `arrival`
 --
 ALTER TABLE `arrival`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT для таблицы `race`
@@ -177,7 +179,7 @@ ALTER TABLE `race`
 -- AUTO_INCREMENT для таблицы `racer`
 --
 ALTER TABLE `racer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

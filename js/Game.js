@@ -21,8 +21,8 @@ class Game {
 
     render() {
         var config = {
-            type: Phaser.AUTO,
-            parent: 'phaser-example',
+            type: Phaser.CANVAS,
+            parent: 'game',
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -30,15 +30,11 @@ class Game {
                     gravity: { y: 0 }
                 }
             },
+            
             scene: Game
         };
 
         var game = new Phaser.Game(config);
-
-        const canvas = document.querySelector('canvas');
-        document.getElementById(this.divId).appendChild(canvas);
-        canvas.classList.add('gameDiv');
-
         this.preload();
         this.create();
         this.update();

@@ -27,45 +27,124 @@ class MapList {
         }
     }
 
-    joinArrival() {
+    arrivalFuncs() {
         const token = this.data['token'];
 
-        async function join(token, roomId) {
-            await fetch(
-                `api/?method=joinArrival&token=${token}&id=${roomId}`
+        async function getStatus(roomId) {
+            const answer = await fetch(
+                `api/?method=checkStatus&arrivalId=${roomId}`
             );
+            return await answer.json();
         }
 
-        //тут будет написан запрос в бэк на подключение к комнате и выход из нее
-        document.addEventListener('click', async function (e) { //тут мы получаем id комнаты для "подключения" к ней
+        async function joinRoom(token, roomId) {
+            const answer = await fetch(
+                `api/?method=joinArrival&token=${token}&arrivalId=${roomId}`
+            );
+            return await answer.json();
+        }
 
-            if (!e.target.classList.contains('roomDiv')) {
-                return
+        //сделаем эту функцию в другом месте
+        async function leaveArrival(token, roomId) {
+            const answer = await fetch(
+                `api/?method=leaveArrival&token=${token}&id=${roomId}`
+            );
+            return await answer.json();
+        }
+
+        async function analiseStatus(roomId) {
+            let plan;
+            let status = await getStatus(roomId);
+            if (status['data'].status == 'racing') {
+                plan = false;
+                clearInterval(timer);
             } else {
+                plan = true;
+                console.log(status['data'].status); 
+            }
+            return plan;
+        }
+        var timer;
+        function getPlanByStatus (plan, roomId) {
+            const form = new Form();
+            timer = setInterval(async function() {
+                if (plan == true) {
+                    plan = await analiseStatus(roomId);
+                    if (plan == false) {
+                        document.getElementById(`${roomId}`).classList.add('entered');
+                        const game = new Game();
+                        form.insertTemplate(game.divId);
+                    }
+                }
+                return plan;
+            }
+            , 500);
+            return plan;
+        } 
 
-                const elements = document.getElementsByClassName('entered');
-                //console.log(token);
-                const roomId = e.target.value;
-                console.log(roomId);
-                await join(token, roomId);
-
+        //тут будет написан запрос в бэк на подключение к комнате и выход из нее
+        document.addEventListener('click', async function (e) { //тут мы получаем id комнаты для подключения к ней
+             if (e.target.classList.contains('roomDiv')) {
+                const form = new Form();
+                const roomId = e.target.id;
+                let elements = document.getElementsByClassName('entered');
                 if (elements.length == 1) {
+                    let removedRoom = elements[0].id;
+                    clearInterval(timer);
+                    console.log(elements[0].id);
+                    await leaveArrival(token, removedRoom); //вызываем метод покидания комнаты (я его отключал для добавления нескольких челиков в таблицу (проверить валидность метода joinArrival) )
                     document.getElementById(`${e.target.id}`).classList.remove('entered');
                     if (elements[0]) {
                         if (e.target.id != elements[0].id) {
+                            removedRoom = elements[0].id;
                             console.log(3)
+                            await leaveArrival(token, removedRoom);
                             document.getElementById(`${elements[0].id}`).classList.remove('entered');
-                            document.getElementById(`${e.target.id}`).classList.add('entered');
+                            let join = await joinRoom(token, roomId);
+                            if (join) {
+                                console.log(join['data']);
+                                if (join['data'].status == 'open') {
+                                    //const start = await roomsListUpdate(token);
+                                    //roomsListUpdate(token);
+                                    document.getElementById(`${e.target.id}`).classList.add('entered');
+                                    let plan = await analiseStatus(roomId);
+                                    if (plan == true) {
+                                        getPlanByStatus(plan,roomId);
+                                    }
+                                    if (plan == false) {
+                                        document.getElementById(`${e.target.id}`).classList.add('entered');
+                                        const game = new Game();
+                                        form.insertTemplate(game.divId)
+                                    }
+                                }
+                            }
                         }
                     }
-
                 } else if (elements.length < 1) {
-                    document.getElementById(`${e.target.id}`).classList.add('entered');
+                    console.log(roomId);
+                    let join = await joinRoom(token, roomId);
+                    if (join) {
+                        console.log(join['data']);
+                        if (join['data'].status == 'open') {
+                            //roomsListUpdate(token);
+                            document.getElementById(`${e.target.id}`).classList.add('entered');
+                            let plan = await analiseStatus(roomId);
+                            if (plan == true) {
+                                getPlanByStatus(plan,roomId);
+                            }
+                            if (plan == false) {
+                                document.getElementById(`${e.target.id}`).classList.add('entered');
+                                const game = new Game();
+                                form.insertTemplate(game.divId)
+                            }
+                                
+                        }
+
+                    }
+
                 }
             }
-
-
-
+            
         });
     }
 
@@ -73,7 +152,6 @@ class MapList {
         const rooms = document.getElementById('rooms');
         const checkRoomsBtn = document.getElementById('checkRoomsBtn');
         const createRoomBtn = document.getElementById('createRoomBtn');
-
         roomsListUpdate(this.data['token']);
 
         async function getAllRooms(token) {
@@ -85,7 +163,7 @@ class MapList {
 
         async function createRoom(token, roomName) { //тут отправляется запрос в бэк с названием комнаты от пользака
             const answer = await fetch(
-                `api/?method=createRoom&token=${token}&name=${roomName}`
+                `api/?method=createRoom&token=${token}&name=${roomName}&raceId=1`
             );
             return await answer.json();
         }
@@ -94,15 +172,16 @@ class MapList {
         async function roomsListUpdate(token) { //эта штука обновляет список 
             rooms.innerHTML = null;
             let answer = await getAllRooms(token); //получаем список комнат
-            if (answer.data) {
-                const roomList = answer.data;
-                for (let i = 0; i < roomList.length; i++) {
-                    let div = document.createElement('div');
-                    div.id = `room${i}`;
-                    div.classList.add('roomDiv');
-                    document.getElementById('rooms').appendChild(div);
-                    div.value = roomList[i].id;
-                    div.innerHTML = roomList[i].name; //тут должно начинаться заполнение блока комнаты (имя, статус, кол. игроков, название трассы)
+            if (answer['data']) {
+                if (answer['data'] != 'error') {
+                    const roomList = answer['data'];
+                    for (let i = 0; i < roomList.length; i++) {
+                        let div = document.createElement('div');
+                        div.id = `${roomList[i].id}`;;
+                        div.classList.add('roomDiv');
+                        document.getElementById('rooms').appendChild(div);
+                        div.innerHTML = `[${roomList[i].status}] ${roomList[i].name}`; //тут должно начинаться заполнение блока комнаты (имя, статус, кол. игроков, название трассы)
+                    }
                 }
             }
         }
@@ -113,7 +192,10 @@ class MapList {
 
         createRoomBtn.addEventListener('click', async () => { //кнопка создания комнаты
             let roomName = document.getElementById('roomNameInp').value;
-            await createRoom(this.data['token'], roomName);
+            let newRoom = await createRoom(this.data['token'], roomName); //запилить автообновление после создания комнаты
+            if (newRoom) {
+                roomsListUpdate(this.data['token']);
+            }
         });
     }
 
@@ -122,7 +204,7 @@ class MapList {
         if (mapListDiv) {
             this.rooms();
             this.logout()
-            this.joinArrival();
+            this.arrivalFuncs();
         }
     }
 }

@@ -3,7 +3,7 @@
 require_once('db/DB.php');
 require_once('users/Users.php');
 require_once('arrival/Arrival.php');
-require_once('racing/Racing.php');
+require_once('lobby/Lobby.php');
 
 class Application
 {
@@ -11,8 +11,16 @@ class Application
     {
         $db = new DB();
         $this->users = new Users($db);
-        //$this->arrival = new Arrival($db);
-        $this->racing = new Racing($db);
+        $this->arrival = new Arrival($db);
+        $this->lobby = new Lobby($db);
+    }
+
+    private function getUser($params)
+    {
+        if ($params['token']) {
+            return $this->users->getUserByToken($params['token']);
+        }
+        return null;
     }
 
     /***************/
@@ -26,6 +34,7 @@ class Application
                 $params['login'],
                 $params['password']
             );
+            $this->lobby->addRacer($user->id);
             return $user;
         }
     }
@@ -39,7 +48,7 @@ class Application
 
     public function logout($params)
     {
-        $this->racing->removeRacer($params['token']);
+        $this->lobby->removeRacer($params['token']);
         return $this->users->logout($params['token']);
     }
 
@@ -59,57 +68,61 @@ class Application
     /****************/
     /*****racing*****/
     /****************/
+    public function checkStatus($params)
+    {
+        $arrivalId = $params['arrivalId'];
+        return $this->lobby->checkStatus($arrivalId);
+    }
 
     public function getRaces($params)
     {
-        if ($params['token']) {
-            if ($this->users->getUserByToken($params['token'])) {
-                return $this->racing->getRaces();
-            }
+        if ($this->getUser($params)) {
+            return $this->lobby->getRaces();
         }
     }
 
     public function getAllRooms($params)
     {
-        if ($params['token']) {
-            if ($this->users->getUserByToken($params['token'])) {
-                return $this->racing->getAllArrivals();
-            }
+        if ($this->getUser($params)) {
+            return $this->lobby->getAllArrivals();
         }
     }
 
     public function joinArrival($params)
     {
-        if ($params['token']) {
-            if ($this->users->getUserByToken($params['token'])) {
-                $raceId = ($params['raceId']) ? $params['raceId'] : 1;
-                return $this->racing->joinArrival($params['token'], $raceId);
-            }
+        if ($this->getUser($params) && $params['arrivalId']) {
+            return $this->arrival->joinArrival($params['token'], $params['arrivalId']);
         }
     }
 
-    /* public function createRoom($params) {
-        if ($params['token']) {
-            if ($this->users->getUserByToken($params['token'])) {
-                return $this->racing->addArrival($params['token'], $params['name'], $params['raceId']);
-            }
+    public function leaveArrival($params)
+    {
+        $user = $this->getUser($params);
+        if ($user) {
+            //echo "it's Britney, bitch";
+            $roomId = $params['id'];
+            return $this->arrival->leaveArrival($params['token'], $roomId);
         }
-    } */
+    }
 
     public function addArrival($params)
     {
-        if ($params['token']) {
-            if ($this->users->getUserByToken($params['token'])) {
-                if ($params['raceId'])
-                    $this->racing->addArrival($params['token'], $params['name'], $params['raceId']);
-                else
-                    $this->racing->addArrival($params['token'], $params['name'], 1);
-            }
+        $user = $this->getUser($params);
+        if ($user && $params['raceId']) {
+            $arrival = $this->arrival->addArrival(
+                $params['name'],
+                $params['raceId']
+            );
         }
+        $this->arrival->joinArrival($params['token'], $arrival->id);
     }
 
     public function isArrivalReady()
     {
-        $this->db->isArrivalReady();
+        return $this->arrival->isArrivalReady();
     }
+
+    /* public function isArrivalReady($params) {
+        return $this->arrival->isArrivalReady($params['arrivalId']);
+    } */
 }

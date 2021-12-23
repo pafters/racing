@@ -30,6 +30,16 @@ class DB
         $this->db = null;
     }
 
+    private function getArray($query)
+    {
+        $stmt = $this->db->query($query);
+        $result = array();
+        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
     /***************/
     /*****users*****/
     /***************/
@@ -49,12 +59,7 @@ class DB
     public function getUsers()
     {
         $query = 'SELECT * FROM users';
-        $stmt = $this->db->query($query);
-        $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-            $result[] = $row;
-        }
-        return $result;
+        return $this->getArray($query);
     }
 
     /*****token*****/
@@ -90,7 +95,8 @@ class DB
 
     public function addRacer($id)
     {
-        $this->db->query("INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES (NULL, '" . $id . "', NULL, NULL, NULL, NULL);");
+        $this->db->query("INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES (NULL, " . $id . ", NULL, NULL, NULL, NULL);");
+        return true;
     }
 
     public function getRacerByUserId($userId)
@@ -115,12 +121,7 @@ class DB
     public function getRaces()
     {
         $query = "SELECT `name` FROM race";
-        $stmt = $this->db->query($query);
-        $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-            $result[] = $row;
-        }
-        return $result;
+        return $this->getArray($query);
     }
 
     /****************/
@@ -130,13 +131,36 @@ class DB
     public function getAllArrivals()
     {
         $query = "SELECT * FROM arrival";
-        $stmt = $this->db->query($query);
-        $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-            $result[] = $row;
-        }
-        return $result;
+        return $this->getArray($query);
     }
+
+    public function checkStatus($arrivalId)
+    {
+        $status = $this->db->query("SELECT `status` FROM `arrival` WHERE `id` = '" . $arrivalId . "'")->fetchObject();
+        return $status;
+    }
+
+    public function getAllOpenArrivals()
+    {
+        $query = "SELECT * FROM arrival WHERE `status` = 'open'";
+        return $this->getArray($query);
+    }
+
+    /* public function addArrival($name, $raceId)
+    {
+        $token = md5(rand());
+        $arrival = $this->db->query("INSERT INTO `arrival` (`id`, `name`, `token`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES (NULL, '" . $name . "', '" . $token . "', '" . $raceId . "', '', NULL, NULL, NULL, NULL);");
+        if ($arrival) {
+            $arrivalId = $this->db->query("SELECT `id` FROM `arrival` WHERE `token` = '" . $token . "'")->fetchObject();
+            if ($arrivalId) {
+                for ($num = 1; $num <= 4; $num++)
+                    $this->db->query("INSERT INTO `racer` (`arrival_id`, `id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES ('" . $arrivalId->id . "', NULL, NULL, NULL, NULL, NULL, NULL);");
+            }
+            //чтобы добавить пользаков в гонку нужно добавить трассу в racer заранее
+        }
+
+        return $this->db->query("SELECT * FROM arrival WHERE `name` = '" . $name . "'")->fetchObject();
+    } */
 
     public function addArrival($name, $raceId)
     {
@@ -155,8 +179,35 @@ class DB
         $this->db->query("UPDATE `arrival` SET `racer_" . $racerNum . "` = '" . $racerId . "' WHERE `arrival`.`id` = " . $arrivalId . ";");
     }
 
+    public function removeRacerFromArrival($arrivalId, $racerNum)
+    {
+        $this->db->query("UPDATE `arrival` SET `racer_" . $racerNum . "` = NULL WHERE `arrival`.`id` = " . $arrivalId . ";");
+    }
+
+    public function startRacing($arrivalId, $racer_1, $racer_2, $racer_3, $racer_4)
+    {
+        $racerid = array($racer_1, $racer_2, $racer_3, $racer_4);
+
+        $query = "SELECT * FROM `racer` WHERE `racer`.`arrival_id` = '" . $arrivalId . "'";
+        $stmt = $this->db->query($query);
+        $result = array();
+        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+            $result[] = $row;
+        }
+
+        if ($result) {
+            $races = array();
+            for ($i = 0; $i < count($result); $i++) {
+                $races[$i] = array(
+                    'id' => $result[$i]->id,
+                );
+                $this->db->query("UPDATE `racer` SET `user_id` = '" . $racerid[$i] . "' WHERE `racer`.`arrival_id` = '" . $arrivalId . "' AND `racer`.`id` = '" . $races[$i]['id'] . "'");
+            }
+        }
+    }
+
     public function setStatusOfArrival($arrivalId, $status)
     {
-        $this->db->query("UPDATE `arrival` SET `status` = " . $status . " WHERE `arrival`.`id` = " . $arrivalId . ";");
+        $this->db->query("UPDATE `arrival` SET `status` = '" . $status . "' WHERE `arrival`.`id` = '" . $arrivalId . "'");
     }
 }
