@@ -131,72 +131,7 @@ class Application
 
     public function getСoordinates($params)
     {
-        if ($params['racerId'] == 'no') {
-            $racer = $this->getRacerByUserId();
-            if ($racer) {
-                //echo $racer->id;
-                $racerId = $racer->id;
-                return $this->arrival->getСoordinates($racerId);
-            }
-        } else {
-            $racerId = $params['racerId'];
-        }
-        return $this->arrival->getСoordinates($racerId);
-    }
-
-    public function getRacerByUserId()
-    {
-        $user = $this->checkCookie();
-        if ($user) {
-            $userId = $user['id'];
-            return $this->arrival->getRacerByUserId($userId);
-            //if ($racer) {
-            //    return $racer;
-            //}
-            //return $user;
-        }
-    }
-
-    public function raceCommand($params)
-    {
-        $command = $params['command'];
-        $w_height = $params['w_height'];
-        $w_width = $params['w_width'];
-        $racer = $this->getRacerByUserId();
-        if ($racer) {
-            $this->arrival->raceCommand($command, $racer->id, $w_height, $w_width);
-        }
-    }
-
-    public function getAllCoordinates($params)
-    {
-        $racers = array($params['racer1'], $params['racer2'], $params['racer3'], $params['racer4']);
-        $arrival_id = $params['arrival_id'];
-        $w_height = $params['w_height'];
-        $w_width = $params['w_width'];
-        return $this->arrival->getAllCoordinates($racers, $arrival_id, $w_width, $w_height);
-    }
-
-    public function getBallByArrivalId($params)
-    {
-        $arrival_id = $params['arrival_id'];
-        return $this->arrival->getBallByArrivalId($arrival_id);
-    }
-
-    public function ballMovement($params)
-    {
-        $arrival_id = $params['arrival_id'];
-        $w_width = $params['w_width'];
-        $w_height = $params['w_height'];
-        return $this->arrival->ballMovement($arrival_id, $w_width, $w_height);
-    }
-
-    public function timer($params)
-    {
-        //set_time_limit(300);
-        $arrival_id = $params['arrival_id'];
-        $w_width = $params['w_width'];
-        $this->arrival->changeLaserСoordinates($arrival_id, $w_width);
+        return $this->arrival->getСoordinates($params);
     }
 
     /* public function isArrivalReady($params) {
