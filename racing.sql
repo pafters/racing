@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Дек 23 2021 г., 18:00
+-- Время создания: Янв 04 2022 г., 19:32
 -- Версия сервера: 8.0.24
 -- Версия PHP: 7.1.33
 
@@ -43,10 +43,52 @@ CREATE TABLE `arrival` (
 --
 
 INSERT INTO `arrival` (`id`, `name`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES
-(9, 'weeewgd', 1, 'open', 107, 107, 107, NULL),
-(10, 'idk', 1, 'open', NULL, NULL, NULL, NULL),
+(9, 'weeewgd', 1, 'racing', 15, 2, 4, 107),
+(10, 'idk', 1, 'racing', 107, 107, 107, 107),
 (12, 'sdfs', 1, 'racing', 107, 107, 107, 107),
 (13, 'апвв', 1, 'racing', 107, 107, 107, 107);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `ball`
+--
+
+CREATE TABLE `ball` (
+  `arrival_id` int DEFAULT NULL,
+  `id` int NOT NULL,
+  `x` float DEFAULT NULL,
+  `y` float DEFAULT NULL,
+  `speed_y` int DEFAULT NULL,
+  `speed_x` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `ball`
+--
+
+INSERT INTO `ball` (`arrival_id`, `id`, `x`, `y`, `speed_y`, `speed_x`) VALUES
+(9, 1, 584, 166, 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `laser`
+--
+
+CREATE TABLE `laser` (
+  `arrival_id` int DEFAULT NULL,
+  `id` int NOT NULL,
+  `x` float DEFAULT NULL,
+  `x2` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Дамп данных таблицы `laser`
+--
+
+INSERT INTO `laser` (`arrival_id`, `id`, `x`, `x2`) VALUES
+(9, 1, 773, 773);
 
 -- --------------------------------------------------------
 
@@ -83,21 +125,23 @@ INSERT INTO `race` (`id`, `name`, `data`) VALUES
 CREATE TABLE `racer` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `x` int DEFAULT NULL,
-  `y` int DEFAULT NULL,
-  `angle` int DEFAULT NULL,
-  `speed` int DEFAULT NULL
+  `x` float DEFAULT NULL,
+  `y` float DEFAULT NULL,
+  `angle` float DEFAULT NULL,
+  `speed` float DEFAULT NULL,
+  `coin` int DEFAULT NULL,
+  `life` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Дамп данных таблицы `racer`
 --
 
-INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES
-(104, 1, NULL, NULL, NULL, NULL),
-(105, 2, NULL, NULL, NULL, NULL),
-(106, 2, NULL, NULL, NULL, NULL),
-(107, 15, NULL, NULL, NULL, NULL);
+INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`, `coin`, `life`) VALUES
+(104, 107, -200, -200, 0, 0, 18, 0),
+(105, 2, -200, -200, 0, 0, 25, 0),
+(106, 4, -200, -200, 0, 0, 37, 0),
+(107, 15, 167.603, 390.228, 163, 6, 81, 1);
 
 -- --------------------------------------------------------
 
@@ -128,7 +172,7 @@ INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 (12, 'жижа', 'THUNDER8000', 'alcozelcer', NULL),
 (13, 'Violet', 'katyaToWin', 'queennn', NULL),
 (14, 'Nicky', 'youdontknowme', 'ammastar', NULL),
-(15, 'reeeeee', 'edic', '124sa', '1a817a84284702280490f152e59d1cc3');
+(15, 'reeeeee', 'edic', '124sa', 'cbc4c683fed3d7aa6753eaa25d5211cf');
 
 --
 -- Индексы сохранённых таблиц
@@ -138,6 +182,18 @@ INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 -- Индексы таблицы `arrival`
 --
 ALTER TABLE `arrival`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `ball`
+--
+ALTER TABLE `ball`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `laser`
+--
+ALTER TABLE `laser`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -170,6 +226,18 @@ ALTER TABLE `arrival`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
+-- AUTO_INCREMENT для таблицы `ball`
+--
+ALTER TABLE `ball`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT для таблицы `laser`
+--
+ALTER TABLE `laser`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT для таблицы `race`
 --
 ALTER TABLE `race`
@@ -179,7 +247,7 @@ ALTER TABLE `race`
 -- AUTO_INCREMENT для таблицы `racer`
 --
 ALTER TABLE `racer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

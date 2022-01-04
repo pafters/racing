@@ -201,13 +201,69 @@ class DB
                 $races[$i] = array(
                     'id' => $result[$i]->id,
                 );
-                $this->db->query("UPDATE `racer` SET `user_id` = '" . $racerid[$i] . "' WHERE `racer`.`arrival_id` = '" . $arrivalId . "' AND `racer`.`id` = '" . $races[$i]['id'] . "'");
+                $this->db->query("UPDATE `racer` SET `user_id` = '" . $racerid[$i] . "' , `life` = '1', `coin` = `1` WHERE `racer`.`arrival_id` = '" . $arrivalId . "' AND `racer`.`id` = '" . $races[$i]['id'] . "'");
             }
         }
+    }
+
+    //UPDATE:
+    public function setStartСoordinates($racers, $x, $y)
+    {
+        for ($num = 0; $num < count($racers); $num++) {
+            $this->db->query("UPDATE `racer` SET `x` = '" . $x[$num] . "', `y` = '" . $y . "'  WHERE `id` = " . $racers[$num] . ";");
+        }
+    }
+
+    public function getСoordinates($racerId)
+    {
+        return $this->db->query("SELECT * FROM `racer` WHERE `id` = " . $racerId . ";")->fetchObject();
     }
 
     public function setStatusOfArrival($arrivalId, $status)
     {
         $this->db->query("UPDATE `arrival` SET `status` = '" . $status . "' WHERE `arrival`.`id` = '" . $arrivalId . "'");
     }
+
+    public function setСoordinatesByRacerId($racerId, $x, $y, $angle, $speed, $life, $coin)
+    {
+        $this->db->query("UPDATE `racer` SET `x` = '" . $x . "', `y` = '" . $y . "', `angle` = '" . $angle . "' ,`speed` = '" . $speed . "',`life` = '" . $life . "' ,`coin` = '" . $coin . "'  WHERE `id` = " . $racerId . ";");
+    }
+
+    public function insertBallCoordinates($arrival_id)
+    {
+        $this->db->query("INSERT INTO `ball` (`arrival_id`, `id`, `x`, `y`, `speed_y`, `speed_x`) VALUES ('" . $arrival_id . "', NULL, ' 300 ', '300', '2','2');");
+    }
+
+    public function insertLaserCoordinates($arrival_id)
+    {
+        $this->db->query("INSERT INTO `laser` (`arrival_id`, `id`, `x`, `y`) VALUES ('" . $arrival_id . "', NULL, NULL, NULL);");
+    }
+
+    public function getLaserByArrivalId($arrival_id)
+    {
+        return $this->db->query("SELECT * FROM `laser` WHERE `arrival_id` = '" . $arrival_id . "';")->fetchObject();
+    }
+
+    public function setLaserСoordinates($id, $x, $x2)
+    {
+        $this->db->query("UPDATE `laser` SET `x` = '" . $x . "', `x2` = '" . $x2 . "' WHERE `id` = " . $id . ";");
+    }
+
+    public function getBallByArrivalId($arrival_id)
+    {
+        $ball = $this->db->query("SELECT * FROM `ball` WHERE `arrival_id` = '" . $arrival_id . "'")->fetchObject();
+        return $ball;
+    }
+
+    public function setBallCoordinates($x, $y, $speed_y, $speed_x, $ball_id)
+    {
+        $this->db->query("UPDATE `ball` SET `x` = '" . $x . "', `y` = '" . $y . "', `speed_y` = '" . $speed_y . "' , `speed_x` = '" . $speed_x . "'  WHERE `id` = '" . $ball_id . "'");
+        return true;
+    }
+    /*
+    public function getBallCoordinates($ballId)
+    {
+        $ball = $this->db->query("SELECT * FROM `ball` WHERE `id` = '" . $ballId . "'")->fetchObject();
+        return $ball;
+    }*/
 }
