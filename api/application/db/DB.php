@@ -95,7 +95,7 @@ class DB
 
     public function addRacer($id)
     {
-        $this->db->query("INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES (NULL, " . $id . ", NULL, NULL, NULL, NULL);");
+        $this->db->query("INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `coin`) VALUES (NULL, " . $id . ", NULL, NULL, NULL, NULL);");
         return true;
     }
 
@@ -146,22 +146,6 @@ class DB
         return $this->getArray($query);
     }
 
-    /* public function addArrival($name, $raceId)
-    {
-        $token = md5(rand());
-        $arrival = $this->db->query("INSERT INTO `arrival` (`id`, `name`, `token`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES (NULL, '" . $name . "', '" . $token . "', '" . $raceId . "', '', NULL, NULL, NULL, NULL);");
-        if ($arrival) {
-            $arrivalId = $this->db->query("SELECT `id` FROM `arrival` WHERE `token` = '" . $token . "'")->fetchObject();
-            if ($arrivalId) {
-                for ($num = 1; $num <= 4; $num++)
-                    $this->db->query("INSERT INTO `racer` (`arrival_id`, `id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES ('" . $arrivalId->id . "', NULL, NULL, NULL, NULL, NULL, NULL);");
-            }
-            //чтобы добавить пользаков в гонку нужно добавить трассу в racer заранее
-        }
-
-        return $this->db->query("SELECT * FROM arrival WHERE `name` = '" . $name . "'")->fetchObject();
-    } */
-
     public function addArrival($name, $raceId)
     {
         $this->db->query("INSERT INTO `arrival` (`id`, `name`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES (NULL, '" . $name . "', '" . $raceId . "', '', NULL, NULL, NULL, NULL);");
@@ -184,50 +168,70 @@ class DB
         $this->db->query("UPDATE `arrival` SET `racer_" . $racerNum . "` = NULL WHERE `arrival`.`id` = " . $arrivalId . ";");
     }
 
-    public function startRacing($arrivalId, $racer_1, $racer_2, $racer_3, $racer_4)
-    {
-        $racerid = array($racer_1, $racer_2, $racer_3, $racer_4);
-
-        $query = "SELECT * FROM `racer` WHERE `racer`.`arrival_id` = '" . $arrivalId . "'";
-        $stmt = $this->db->query($query);
-        $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-            $result[] = $row;
-        }
-
-        if ($result) {
-            $races = array();
-            for ($i = 0; $i < count($result); $i++) {
-                $races[$i] = array(
-                    'id' => $result[$i]->id,
-                );
-                $this->db->query("UPDATE `racer` SET `user_id` = '" . $racerid[$i] . "' WHERE `racer`.`arrival_id` = '" . $arrivalId . "' AND `racer`.`id` = '" . $races[$i]['id'] . "'");
-            }
-        }
-    }
-
     //UPDATE:
-    public function setСoordinates($racers)
+    public function setStartСoordinates($racers, $x, $y)
     {
-        $X = 200;
-        $Y = 200;
         for ($num = 0; $num < count($racers); $num++) {
-            $this->db->query("UPDATE `racer` SET `x` = '" . $X . "', `y` = '" . $Y . "'  WHERE `id` = " . $racers[$num] . ";");
-            $X += 150;
+            $this->db->query("UPDATE `racer` SET `x` = '" . $x[$num] . "', `y` = '" . $y . "', `life` = '1', `coin` = '0', `angle` = '0'  WHERE `id` = " . $racers[$num] . ";");
         }
     }
 
-    public function getСoordinates($racers)
+    public function getСoordinates($racerId)
     {
-        $coordinates_by_id = array();
-        for ($num = 0; $num < count($racers); $num++) {
-            $coordinates_by_id[$num] = $this->db->query("SELECT `x`, `y`, `angle` FROM `racer` WHERE `id` = " . $racers[$num] . ";")->fetchObject();
-        }
-        return $coordinates_by_id;
+        return $this->db->query("SELECT * FROM `racer` WHERE `id` = " . $racerId . ";")->fetchObject();
+    }
+
+    public function delete_Player_Killer($player_killer_id)
+    {
+        $this->db->query("DELETE FROM `player_killer` WHERE `player_killer`.`id` = '" . $player_killer_id . "'");
+    }
+
+    public function delete_Ball($ball_id)
+    {
+        $this->db->query("DELETE FROM `ball` WHERE `ball`.`id` = '" . $ball_id . "'");
     }
 
     public function setStatusOfArrival($arrivalId, $status)
     {
         $this->db->query("UPDATE `arrival` SET `status` = '" . $status . "' WHERE `arrival`.`id` = '" . $arrivalId . "'");
+    }
+
+    public function setСoordinatesByRacerId($racerId, $x, $y, $angle, $life, $coin)
+    {
+        $this->db->query("UPDATE `racer` SET `x` = '" . $x . "', `y` = '" . $y . "', `angle` = '" . $angle . "' , `life` = '" . $life . "' ,`coin` = '" . $coin . "'  WHERE `id` = " . $racerId . ";");
+    }
+
+    public function insert_Ball_Into_Arrival($arrival_id)
+    {
+        $this->db->query("INSERT INTO `ball` (`arrival_id`, `id`, `x`, `y`, `speed_y`, `speed_x`) VALUES ('" . $arrival_id . "', NULL ,'300', '300', '3' , '3');");
+    }
+
+    public function getBallByArrivalId($arrival_id)
+    {
+        $ball = $this->db->query("SELECT * FROM `ball` WHERE `arrival_id` = '" . $arrival_id . "'")->fetchObject();
+        return $ball;
+    }
+
+    public function setBallCoordinates($x, $y, $speed_y, $speed_x, $ball_id)
+    {
+        $this->db->query("UPDATE `ball` SET `x` = '" . $x . "', `y` = '" . $y . "', `speed_y` = '" . $speed_y . "' , `speed_x` = '" . $speed_x . "'  WHERE `id` = '" . $ball_id . "'");
+        return true;
+    }
+
+    public function insertPlayer_Killer_Into_Arrival($arrival_id)
+    {
+        $this->db->query("INSERT INTO `player_killer` (`arrival_id`, `id`, `x`, `y`, `speed_y`, `speed_x`) VALUES ('" . $arrival_id . "', NULL ,'300', '300', '5' , '5');");
+    }
+
+    public function get_Player_Killer_By_ArrivalId($arrival_id)
+    {
+        $player_killer = $this->db->query("SELECT * FROM `player_killer` WHERE `arrival_id` = '" . $arrival_id . "'")->fetchObject();
+        return $player_killer;
+    }
+
+    public function set_Player_Killer_Coordinates($x, $y, $speed_y, $speed_x, $ball_id)
+    {
+        $this->db->query("UPDATE `player_killer` SET `x` = '" . $x . "', `y` = '" . $y . "', `speed_y` = '" . $speed_y . "' , `speed_x` = '" . $speed_x . "'  WHERE `id` = '" . $ball_id . "'");
+        return true;
     }
 }

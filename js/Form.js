@@ -28,7 +28,7 @@ class Form {
             //    menu.render();
             //    break;
             case 'game':
-                const game = new Game();
+                const game = new Game(data);
                 game.render();
                 break;
             case 'mapList':

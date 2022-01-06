@@ -40,18 +40,8 @@ class Markup {
                     <button class = "btn" id = "loginBtn">Вернуться</button>
                 `;
                 break;
-            //case 'menu':
-            //    const menuDiv = document.getElementById(`${divId}`);
-            //    menuDiv.classList.add('internalDiv');
-            //    menuDiv.innerHTML = `
-            //        <p id ="textInfo">Меню</p>
-            //        <br>
-            //        <button class = "btn" id = "mapListBtn">Список карт</button>
-            //        <br>
-            //        
-            //    `;
-            //    break;
             case 'game':
+
                 const gameDiv = document.getElementById(`${divId}`);
                 gameDiv.classList.add('gameDiv');
                 break;

@@ -73,7 +73,7 @@ class MapList {
                     if (plan == false) {
                         document.getElementById(`${roomId}`).classList.add('entered');
                         const game = new Game();
-                        form.insertTemplate(game.divId);
+                        form.insertTemplate(game.divId, [`${roomId}`]);
                     }
                 }
                 return plan;
@@ -114,7 +114,7 @@ class MapList {
                                     if (plan == false) {
                                         document.getElementById(`${e.target.id}`).classList.add('entered');
                                         const game = new Game();
-                                        form.insertTemplate(game.divId)
+                                        form.insertTemplate(game.divId, [`${e.target.id}`])
                                     }
                                 }
                             }
@@ -135,7 +135,7 @@ class MapList {
                             if (plan == false) {
                                 document.getElementById(`${e.target.id}`).classList.add('entered');
                                 const game = new Game();
-                                form.insertTemplate(game.divId)
+                                form.insertTemplate(game.divId, [`${e.target.id}`])
                             }
                                 
                         }

@@ -101,6 +101,7 @@ class Application
         if ($user) {
             //echo "it's Britney, bitch";
             $roomId = $params['id'];
+            //$this->db->setStatusOfArrival($roomId, 'open');
             return $this->arrival->leaveArrival($params['token'], $roomId);
         }
     }
@@ -131,7 +132,68 @@ class Application
 
     public function getСoordinates($params)
     {
-        return $this->arrival->getСoordinates($params);
+        if ($params['racerId'] == 'no') {
+            $racer = $this->getRacerByUserId();
+            if ($racer) {
+                //echo $racer->id;
+                $racerId = $racer->id;
+                return $this->arrival->getСoordinates($racerId);
+            }
+        } else {
+            $racerId = $params['racerId'];
+        }
+        return $this->arrival->getСoordinates($racerId);
+    }
+
+    public function getRacerByUserId()
+    {
+        $user = $this->checkCookie();
+        if ($user) {
+            $userId = $user['id'];
+            return $this->arrival->getRacerByUserId($userId);
+            //if ($racer) {
+            //    return $racer;
+            //}
+            //return $user;
+        }
+    }
+
+    public function raceCommand($params)
+    {
+        $command = $params['command'];
+        $w_height = $params['w_height'];
+        $w_width = $params['w_width'];
+        $racer = $this->getRacerByUserId();
+        if ($racer) {
+            $this->arrival->raceCommand($command, $racer->id, $w_height, $w_width);
+        }
+    }
+
+    public function getAllCoordinates($params)
+    {
+        $racers = array($params['racer1'], $params['racer2'], $params['racer3'], $params['racer4']);
+        $arrival_id = $params['arrival_id'];
+        $w_height = $params['w_height'];
+        $w_width = $params['w_width'];
+        return $this->arrival->getAllCoordinates($racers, $arrival_id, $w_width, $w_height);
+    }
+
+    public function getBallByArrivalId($params)
+    {
+        $arrival_id = $params['arrival_id'];
+        return $this->arrival->getBallByArrivalId($arrival_id);
+    }
+
+    public function get_Player_Killer_By_ArrivalId($params)
+    {
+        $arrival_id = $params['arrival_id'];
+        return $this->arrival->get_Player_Killer_By_ArrivalId($arrival_id);
+    }
+
+    public function timer($params)
+    {
+        $arrival_id = $params['arrival_id'];
+        $this->arrival->timer();
     }
 
     /* public function isArrivalReady($params) {

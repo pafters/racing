@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Дек 23 2021 г., 18:00
+-- Время создания: Янв 06 2022 г., 12:51
 -- Версия сервера: 8.0.24
 -- Версия PHP: 7.1.33
 
@@ -43,10 +43,40 @@ CREATE TABLE `arrival` (
 --
 
 INSERT INTO `arrival` (`id`, `name`, `race_id`, `status`, `racer_1`, `racer_2`, `racer_3`, `racer_4`) VALUES
-(9, 'weeewgd', 1, 'open', 107, 107, 107, NULL),
-(10, 'idk', 1, 'open', NULL, NULL, NULL, NULL),
+(9, 'weeewgd', 1, 'open', NULL, NULL, NULL, NULL),
+(10, 'idk', 1, 'racing', 107, 107, 107, 107),
 (12, 'sdfs', 1, 'racing', 107, 107, 107, 107),
 (13, 'апвв', 1, 'racing', 107, 107, 107, 107);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `ball`
+--
+
+CREATE TABLE `ball` (
+  `arrival_id` int DEFAULT NULL,
+  `id` int NOT NULL,
+  `x` float DEFAULT NULL,
+  `y` float DEFAULT NULL,
+  `speed_y` int DEFAULT NULL,
+  `speed_x` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `player_killer`
+--
+
+CREATE TABLE `player_killer` (
+  `arrival_id` int DEFAULT NULL,
+  `id` int NOT NULL,
+  `x` float DEFAULT NULL,
+  `y` float DEFAULT NULL,
+  `speed_y` int DEFAULT NULL,
+  `speed_x` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -83,21 +113,22 @@ INSERT INTO `race` (`id`, `name`, `data`) VALUES
 CREATE TABLE `racer` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `x` int DEFAULT NULL,
-  `y` int DEFAULT NULL,
-  `angle` int DEFAULT NULL,
-  `speed` int DEFAULT NULL
+  `x` float DEFAULT NULL,
+  `y` float DEFAULT NULL,
+  `angle` float DEFAULT NULL,
+  `coin` int DEFAULT NULL,
+  `life` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Дамп данных таблицы `racer`
 --
 
-INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `speed`) VALUES
-(104, 1, NULL, NULL, NULL, NULL),
-(105, 2, NULL, NULL, NULL, NULL),
-(106, 2, NULL, NULL, NULL, NULL),
-(107, 15, NULL, NULL, NULL, NULL);
+INSERT INTO `racer` (`id`, `user_id`, `x`, `y`, `angle`, `coin`, `life`) VALUES
+(104, 14, 500, 120, 0, 0, 1),
+(105, 2, -200, -200, 0, 4, 0),
+(106, 4, 650, 120, 0, 1, 0),
+(110, 16, -200, -200, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -119,7 +150,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 (1, 'Мария', 'masha', '111', NULL),
-(2, 'Шрек', 'shrek', 'fiona', NULL),
+(2, 'Шрек', 'shrek', 'fiona', 'cbc4c683fed3d7aa6753eaa25d521112'),
 (3, 'Антонина', 'tonya5000', '123', NULL),
 (6, 'Клементина', 'baltazar1998', 'alopecia', NULL),
 (9, 'Joan', 'rockandroll', '000', NULL),
@@ -128,7 +159,7 @@ INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 (12, 'жижа', 'THUNDER8000', 'alcozelcer', NULL),
 (13, 'Violet', 'katyaToWin', 'queennn', NULL),
 (14, 'Nicky', 'youdontknowme', 'ammastar', NULL),
-(15, 'reeeeee', 'edic', '124sa', '1a817a84284702280490f152e59d1cc3');
+(16, 'reeeeee', 'edic', '124sa', '4f19b91b0255e6243b9eb035539ddaec');
 
 --
 -- Индексы сохранённых таблиц
@@ -138,6 +169,18 @@ INSERT INTO `users` (`id`, `name`, `login`, `password`, `token`) VALUES
 -- Индексы таблицы `arrival`
 --
 ALTER TABLE `arrival`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `ball`
+--
+ALTER TABLE `ball`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `player_killer`
+--
+ALTER TABLE `player_killer`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -170,6 +213,18 @@ ALTER TABLE `arrival`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
+-- AUTO_INCREMENT для таблицы `ball`
+--
+ALTER TABLE `ball`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- AUTO_INCREMENT для таблицы `player_killer`
+--
+ALTER TABLE `player_killer`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+
+--
 -- AUTO_INCREMENT для таблицы `race`
 --
 ALTER TABLE `race`
@@ -179,13 +234,13 @@ ALTER TABLE `race`
 -- AUTO_INCREMENT для таблицы `racer`
 --
 ALTER TABLE `racer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

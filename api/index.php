@@ -22,9 +22,7 @@ function router($params)
                 case 'checkCookie':
                     return $app->checkCookie();
 
-                    //racing
-                    //case 'getRaces':
-                    //    return $app->getRaces($params); //этот метод уже не нужен, но пусть пока побудет живым, вдруг что-то сдохнет
+                    //racingт
                 case 'getAllRooms':
                     return $app->getAllRooms($params);
                 case 'joinArrival':
@@ -44,9 +42,19 @@ function router($params)
                 case 'getRacers':
                     return $app->getRacers($params);
                 case 'raceCommand':
-                    return true;
+                    return $app->raceCommand($params);
                 case 'getСoordinates':
                     return $app->getСoordinates($params);
+                case 'getAllCoordinates':
+                    return $app->getAllCoordinates($params);
+                case 'getRacerByUserId':
+                    return $app->getRacerByUserId();
+                case 'getBallByArrivalId':
+                    return $app->getBallByArrivalId($params);
+                case 'getPlayerKillerByArrivalId':
+                    return $app->get_Player_Killer_By_ArrivalId($params);
+                case 'timer':
+                    $app->timer($params);
             }
         }
         return false;
