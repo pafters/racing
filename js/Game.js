@@ -48,21 +48,13 @@ class Game {
 
     async getRacers() {
         const arrivalId = this.game.arrivalId;
-        var coordinates;
-        async function getRacers() {
-            const answer = await fetch(
-                `api/?method=getRacers&arrivalId=${arrivalId}`
-            );
-            return await answer.json();
-        }
-        const racers = await getRacers();
-        if (racers) {
-            coordinates = await this.getLocation(racers["data"]);
-            if (coordinates) return coordinates;
-        }
+        const racers = await fetch(
+            `api/?method=getRacers&arrivalId=${arrivalId}`
+        );
+        return await racers.json();     //array of racers
     }
 
-    async getBallByArrivalId(){
+    async getBallByArrivalId() {
         const answer = await fetch(`api/?method=getBallByArrivalId&arrival_id=${this.game.arrivalId}`);
         return await answer.json();
     }
@@ -72,12 +64,7 @@ class Game {
         return await answer.json();
     }
 
-    async getСoordinates(racers) {
-        const answer = await fetch(`api/?method=getСoordinates&racerId=${racers}`);
-        return await answer.json();
-    }
-
-    async getAllCoordinates(racer1,racer2,racer3,racer4) {
+    async getAllCoordinates(racer1, racer2, racer3, racer4) {
         const answer = await fetch(`api/?method=getAllCoordinates&racer1=${racer1}&racer2=${racer2}&racer3=${racer3}&racer4=${racer4}&arrival_id=${this.game.arrivalId}&w_width=${this.config.width}&w_height=${this.config.height}`);
         return await answer.json();
     }
@@ -92,26 +79,14 @@ class Game {
         return await answer.json();
     }
 
-    async getLocation(racers) {
-        let coordinates = [];
-        var info;
-        for (let i = 0; i < racers.length; i++) {
-            info = await this.getСoordinates(racers[i]);
-            if (info) {
-                coordinates.push(info["data"]);
-            }
-        }
-        return coordinates;
-    }
-
     async createBall() {
         if (this.ball) {
             this.ball.destroy();
         }
         const ballCoordinates = await this.getBallByArrivalId();
         if (ballCoordinates) {
-            var x = ballCoordinates['data'].x;
-            var y = ballCoordinates['data'].y;
+            let x = ballCoordinates['data'].x;
+            let y = ballCoordinates['data'].y;
             this.ball = this.add.sprite(x, y, 'ball');
             this.ball.displayHeight = 60
             this.ball.displayWidth = 60;
@@ -126,8 +101,8 @@ class Game {
         }
         const playerKillerCoordinates = await this.getBallByArrivalId();
         if (playerKillerCoordinates) {
-            var x = playerKillerCoordinates['data'].x;
-            var y = playerKillerCoordinates['data'].y;
+            let x = playerKillerCoordinates['data'].x;
+            let y = playerKillerCoordinates['data'].y;
             //this.idk = this.add.circle(x, y, 50, 0xb00000);
             this.playerKiller = this.add.sprite(x, y, 'player_killer');
             this.playerKiller.displayHeight = 70;
@@ -147,36 +122,35 @@ class Game {
         if (this.player) {
             this.player.destroy();
         }
-        var x;
-        var y;
+        let x;
+        let y;
         this.playerGroup = this.add.group();
         this.playerNameGroup = this.add.group();
-        const coordinates = await this.getRacers(); 
-        if (coordinates) {
+        let racers = await this.getRacers(); //массив гонщиков с полной информацией
+        racers = racers['data'];
+        if (racers) {
             const racerId = await this.getRacerByUserId();
             if (racerId) {
-                let index = 1;
-                for (let i = 0; i < coordinates.length; i++) {
-                    x = coordinates[i].x;
-                    y = coordinates[i].y;
+                for (let i = 0; i < racers.length; i++) {
+                    x = racers[i].x;
+                    y = racers[i].y;
                     if (x && y) {
-                        this.player = this.add.image(x, y, `${index}_car`); // 15,  0xffffff)//);
+                        this.player = this.add.image(x, y, `${i + 1}_car`); // 15,  0xffffff)//);
                         this.player.displayWidth = 55;
                         this.player.displayHeight = 90;
                         if (this.player) {
-                            this.player.id = coordinates[i].id;
+                            this.player.id = racers[i].id;
                             if (racerId['data'].id == this.player.id) {
                                 this.playerName = this.add.text(x, y, 'you');
-                                this.playerName.id = coordinates[i].id;
+                                this.playerName.id = racers[i].id;
                             } else {
-                                this.playerName = this.add.text(x, y, `${coordinates[i].id}`);
-                                this.playerName.id = coordinates[i].id;
+                                this.playerName = this.add.text(x, y, `${racers[i].id}`);
+                                this.playerName.id = racers[i].id;
                             }
                         }
                     }
                     this.playerGroup.add(this.player);
                     this.playerNameGroup.add(this.playerName);
-                    index++;
                 }
             }
         }
@@ -184,19 +158,17 @@ class Game {
             this.playerGroup.children.entries[1].id &&
             this.playerGroup.children.entries[2].id &&
             this.playerGroup.children.entries[3].id) {
-                const infoDiv = document.createElement('div');
-                infoDiv.id = 'infodiv';
-                document.getElementById('game').appendChild(infoDiv);
+            const infoDiv = document.createElement('div');
+            infoDiv.id = 'infodiv';
+            document.getElementById('game').appendChild(infoDiv);
 
-                this.spamLocation();
-            }
-            
-
+            this.spamLocation();
+        }
     }
 
     create() {
         //about background
-        const background = this.add.image(0, 0, `background`).setOrigin(0,0);
+        const background = this.add.image(0, 0, `background`).setOrigin(0, 0);
         background.displayWidth = this.config.width;
         background.displayHeight = this.config.height;
 
@@ -215,7 +187,7 @@ class Game {
         const divInfo = document.createElement('div');
         document.getElementById('game').appendChild(divInfo);
         divInfo.id = 'divInfo';
-        if(divInfo) {
+        if (divInfo) {
             document.getElementById(divInfo.id).innerHTML = `<p id = "count"></p>
             <button id = "exit" class = "btn">Выйти</button>`;
         }
@@ -228,62 +200,65 @@ class Game {
                 form.insertTemplate(mapList.divId, token['data']);
             }
         });
-        
-        
+
+
     }
 
 
     spamLocation() {
         //const infoDiv = document.getElementById('infoDiv');
-                    
-        this.info = [-1,-1,-1,-1]
+
+        this.info = [-1, -1, -1, -1]
+        //
+        //let racers = [];
+        //for (let i = 0; i < this.playerGroup.children.entries.length; i++) {
+        //    (this.playerGroup.children.entries[i].id) ? racers[i] = this.playerGroup.children.entries[i].id : null;
+        //}
+        //
         var interval = setInterval(() => {
             this.getAllCoordinates(
                 this.playerGroup.children.entries[0].id,
                 this.playerGroup.children.entries[1].id,
                 this.playerGroup.children.entries[2].id,
                 this.playerGroup.children.entries[3].id).then(coordinates => {
-                //console.log(coordinates['data']);
-
-                //console.log(coordinates['data'][0].coin, coordinates['data'][1].coin, coordinates['data'][2].coin, coordinates['data'][3].coin);
-                if(coordinates['data'][6] != true) {
-                    for (let i = 0; i < this.playerGroup.children.entries.length; i++) {
-                        if ( coordinates['data'][i].life = 1) { //типа не нагружать клиент ???????
-                            if (coordinates['data'][i].y && coordinates['data'][i].x) {
-                                if ((this.playerGroup.children.entries[i].x != coordinates['data'][i].x)) {
-                                    this.playerGroup.children.entries[i].x = coordinates['data'][i].x;
-                                    this.playerNameGroup.children.entries[i].x = coordinates['data'][i].x;
+                    if (coordinates['data'][6] != true) {
+                        for (let i = 0; i < this.playerGroup.children.entries.length; i++) {
+                            if (coordinates['data'][i].life = 1) {
+                                if (coordinates['data'][i].y && coordinates['data'][i].x) {
+                                    if ((this.playerGroup.children.entries[i].x != coordinates['data'][i].x)) {
+                                        this.playerGroup.children.entries[i].x = coordinates['data'][i].x;
+                                        this.playerNameGroup.children.entries[i].x = coordinates['data'][i].x;
+                                    }
+                                    if ((this.playerGroup.children.entries[i].y != coordinates['data'][i].y)) {
+                                        this.playerGroup.children.entries[i].y = coordinates['data'][i].y;
+                                        this.playerNameGroup.children.entries[i].y = coordinates['data'][i].y;
+                                    }
+                                    this.playerGroup.children.entries[i].angle = coordinates['data'][i].angle;
                                 }
-                                if ((this.playerGroup.children.entries[i].y != coordinates['data'][i].y)) {
-                                    this.playerGroup.children.entries[i].y = coordinates['data'][i].y;
-                                    this.playerNameGroup.children.entries[i].y = coordinates['data'][i].y;
-                                }
-                                this.playerGroup.children.entries[i].angle = coordinates['data'][i].angle;
                             }
-                        }
-                        if(this.info[i] != coordinates['data'][i].coin) {
-                            this.info[i] = coordinates['data'][i].coin;
-                            document.getElementById('count').innerHTML = `
+                            if (this.info[i] != coordinates['data'][i].coin) {
+                                this.info[i] = coordinates['data'][i].coin;
+                                document.getElementById('count').innerHTML = `
                             <p class = "textResult">ID ${coordinates['data'][0].id} : ${coordinates['data'][0].coin}</p></br>
                             <p class = "textResult">ID ${coordinates['data'][1].id} : ${coordinates['data'][1].coin}</p></br>
                             <p class = "textResult">ID ${coordinates['data'][2].id} : ${coordinates['data'][2].coin}</p></br>
                             <p class = "textResult">ID ${coordinates['data'][3].id} : ${coordinates['data'][3].coin}</p>
                             `;
+                            }
                         }
-                    }
 
-                    this.ball.x = coordinates['data'][4].x;
-                    this.ball.y = coordinates['data'][4].y;
-                    this.ball.angle++;
-    
-                    this.playerKiller.x = coordinates['data'][5].x;
-                    this.playerKiller.y = coordinates['data'][5].y;
-                    this.playerKiller.angle++;
-                    //console.log(coordinates);
-                }
-                if(coordinates['data'][6] == true) {
-                    clearInterval(interval);
-                    document.getElementById('game').innerHTML = `
+                        this.ball.x = coordinates['data'][4].x;
+                        this.ball.y = coordinates['data'][4].y;
+                        this.ball.angle++;
+
+                        this.playerKiller.x = coordinates['data'][5].x;
+                        this.playerKiller.y = coordinates['data'][5].y;
+                        this.playerKiller.angle++;
+                        //console.log(coordinates);
+                    }
+                    if (coordinates['data'][6] == true) {
+                        clearInterval(interval);
+                        document.getElementById('game').innerHTML = `
                     <div id = "divEnd" class = "internalDiv">
                         <p id = "textInfo"> Игра окончена </p>
                         <p class = "textResult">ID ${coordinates['data'][0].id} : ${coordinates['data'][0].coin} оч.</p></br>
@@ -293,25 +268,25 @@ class Game {
                         <button id = "exitEnd" class = "btn">Выйти</button>
                     </div>
                     `;
-                    const exitEnd = document.getElementById('exitEnd');
-                    if (exitEnd) {
-                        exitEnd.addEventListener('click', async () => {
-                            const token = await this.getToken();
-                            console.log('dfsf')
-                            if (token) {
-                                const mapList = new MapList();
-                                const form = new Form();
-                                form.insertTemplate(mapList.divId, token['data']);
-                            }
-                        });    
+                        const exitEnd = document.getElementById('exitEnd');
+                        if (exitEnd) {
+                            exitEnd.addEventListener('click', async () => {
+                                const token = await this.getToken();
+                                console.log('dfsf')
+                                if (token) {
+                                    const mapList = new MapList();
+                                    const form = new Form();
+                                    form.insertTemplate(mapList.divId, token['data']);
+                                }
+                            });
+                        }
                     }
-                }
-                
-            });
-        }, 1000/60);
-        
+
+                });
+        }, 1000 / 60);
+
     }
-    
+
     update() {
         if (this.cursorUp.isDown) {
             this.raceCommand('W');
@@ -332,7 +307,7 @@ class Game {
         this.game = new Phaser.Game(this.config);
         this.game.arrivalId = this.arrivalId;
         //this.preload(); ////?????????????
-        image.onload = async function() {
+        image.onload = async function () {
             //this.create(); //?????????????
             //this.update(); //?????????????
         }

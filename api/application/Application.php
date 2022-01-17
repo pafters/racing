@@ -99,7 +99,6 @@ class Application
     {
         $user = $this->getUser($params);
         if ($user) {
-            //echo "it's Britney, bitch";
             $roomId = $params['id'];
             //$this->db->setStatusOfArrival($roomId, 'open');
             return $this->arrival->leaveArrival($params['token'], $roomId);
@@ -130,19 +129,19 @@ class Application
         return $this->arrival->getRacers($arrivalId);
     }
 
-    public function getСoordinates($params)
+    public function getRacerById($params)
     {
         if ($params['racerId'] == 'no') {
             $racer = $this->getRacerByUserId();
             if ($racer) {
                 //echo $racer->id;
                 $racerId = $racer->id;
-                return $this->arrival->getСoordinates($racerId);
+                return $this->arrival->getRacerById($racerId);
             }
         } else {
             $racerId = $params['racerId'];
         }
-        return $this->arrival->getСoordinates($racerId);
+        return $this->arrival->getRacerById($racerId);
     }
 
     public function getRacerByUserId()

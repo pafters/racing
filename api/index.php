@@ -43,8 +43,8 @@ function router($params)
                     return $app->getRacers($params);
                 case 'raceCommand':
                     return $app->raceCommand($params);
-                case 'getСoordinates':
-                    return $app->getСoordinates($params);
+                case 'getRacerById':                    //оно называлось getСoordinates
+                    return $app->getRacerById($params);
                 case 'getAllCoordinates':
                     return $app->getAllCoordinates($params);
                 case 'getRacerByUserId':

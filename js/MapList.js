@@ -52,7 +52,7 @@ class MapList {
             return await answer.json();
         }
 
-        async function analiseStatus(roomId) {
+        async function analyzeStatus(roomId) {
             let plan;
             let status = await getStatus(roomId);
             if (status['data'].status == 'racing') {
@@ -60,16 +60,16 @@ class MapList {
                 clearInterval(timer);
             } else {
                 plan = true;
-                console.log(status['data'].status); 
+                console.log(status['data'].status);
             }
             return plan;
         }
         var timer;
-        function getPlanByStatus (plan, roomId) {
+        function getPlanByStatus(plan, roomId) {
             const form = new Form();
-            timer = setInterval(async function() {
+            timer = setInterval(async function () {
                 if (plan == true) {
-                    plan = await analiseStatus(roomId);
+                    plan = await analyzeStatus(roomId);
                     if (plan == false) {
                         document.getElementById(`${roomId}`).classList.add('entered');
                         const game = new Game();
@@ -78,13 +78,13 @@ class MapList {
                 }
                 return plan;
             }
-            , 500);
+                , 500);
             return plan;
-        } 
+        }
 
         //тут будет написан запрос в бэк на подключение к комнате и выход из нее
         document.addEventListener('click', async function (e) { //тут мы получаем id комнаты для подключения к ней
-             if (e.target.classList.contains('roomDiv')) {
+            if (e.target.classList.contains('roomDiv')) {
                 const form = new Form();
                 const roomId = e.target.id;
                 let elements = document.getElementsByClassName('entered');
@@ -107,9 +107,9 @@ class MapList {
                                     //const start = await roomsListUpdate(token);
                                     //roomsListUpdate(token);
                                     document.getElementById(`${e.target.id}`).classList.add('entered');
-                                    let plan = await analiseStatus(roomId);
+                                    let plan = await analyzeStatus(roomId);
                                     if (plan == true) {
-                                        getPlanByStatus(plan,roomId);
+                                        getPlanByStatus(plan, roomId);
                                     }
                                     if (plan == false) {
                                         document.getElementById(`${e.target.id}`).classList.add('entered');
@@ -128,23 +128,27 @@ class MapList {
                         if (join['data'].status == 'open') {
                             //roomsListUpdate(token);
                             document.getElementById(`${e.target.id}`).classList.add('entered');
-                            let plan = await analiseStatus(roomId);
+                            let plan = await analyzeStatus(roomId);
+
+                            //
+                            //plan = false;
+
                             if (plan == true) {
-                                getPlanByStatus(plan,roomId);
+                                getPlanByStatus(plan, roomId);
                             }
                             if (plan == false) {
                                 document.getElementById(`${e.target.id}`).classList.add('entered');
                                 const game = new Game();
                                 form.insertTemplate(game.divId, [`${e.target.id}`])
                             }
-                                
+
                         }
 
                     }
 
                 }
             }
-            
+
         });
     }
 

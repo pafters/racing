@@ -10,7 +10,7 @@ class Arrival
     public function joinArrival($token, $arrivalId)
     {
         $user = $this->db->getUserByToken($token); //проблем не должно возникнуть
-        //$racer = $this->db->getRacerByUserId($user->id);
+        $racer = $this->getRacerByUserId($user->id);
 
         if ($user) {
             $arrival = $this->db->getArrivalById($arrivalId); // должно нормально работать
@@ -26,26 +26,19 @@ class Arrival
                     $num = 4;
             }
             if ($num != 0) {
-                $this->db->addRacerIntoArrival($arrivalId, $user->id, $num);
+                $this->db->addRacerIntoArrival($arrivalId, $racer->id, $num);
                 $upd_arrival = $this->db->getArrivalById($arrivalId);
                 if ($upd_arrival) {
                     if ($upd_arrival->racer_1 && $upd_arrival->racer_2 && $upd_arrival->racer_3 && $upd_arrival->racer_4) {
                         $this->db->setStatusOfArrival($arrivalId, 'racing');
                         $this->db->insert_Ball_Into_Arrival($arrivalId);
                         $this->db->insertPlayer_Killer_Into_Arrival($arrivalId);
-                        $users = array(
+                        $racers = array(
                             $upd_arrival->racer_1,
                             $upd_arrival->racer_2,
                             $upd_arrival->racer_3,
                             $upd_arrival->racer_4
                         );
-                        $racers = array();
-                        for ($num = 0; $num < count($users); $num++) {
-
-                            $racerInfo = $this->db->getRacerByUserId($users[$num]);
-                            $racers[$num] = $racerInfo->id;
-                            //echo $racers[$num];
-                        }
                         $x = array(500, 650, 800, 950);
                         $y = 120;
                         $this->db->setStartСoordinates($racers, $x, $y);
@@ -114,7 +107,7 @@ class Arrival
         );
     }
     //UPDATE:
-    public function getRacers($arrivalId)
+    /* public function getRacers($arrivalId)
     {
         $arrival = $this->db->getArrivalById($arrivalId);
         if ($arrival) {
@@ -132,11 +125,31 @@ class Arrival
             }
         }
         return $racers;
+    } */
+    public function getRacers($arrivalId)       //не работает, потому что в бд arrival записываются userId, а не racerId
+    {
+        $arrival = $this->db->getArrivalById($arrivalId);
+        if ($arrival) {
+            $racerIDs = array(
+                $arrival->racer_1,
+                $arrival->racer_2,
+                $arrival->racer_3,
+                $arrival->racer_4,
+            );
+            //echo $racerIDs[0];
+            $racers = array();
+            for ($i = 0; $i < count($racerIDs); $i++) {
+                $racer = $this->db->getRacerById($racerIDs[$i]);
+                if ($racer)
+                    $racers[$i] = $racer;
+            }
+        }
+        return $racers;
     }
 
-    public function getСoordinates($racerId)
+    public function getRacerById($racerId)
     {
-        $coordinates = $this->db->getСoordinates($racerId);
+        $coordinates = $this->db->getRacerById($racerId);
         if ($coordinates)
             return $coordinates;
     }
@@ -146,44 +159,44 @@ class Arrival
         return $this->db->getRacerByUserId($userId);
     }
 
-    public function getAllCoordinates($racers, $arrival_id, $w_width, $w_height)
+    public function getAllCoordinates($racerIDs, $arrival_id, $w_width, $w_height)
     { //тут много чего намудрено, но оно работает
         $dead = 0;
-        for ($num = 0; $num < count($racers); $num++) {
-            $coordinates[$num] = $this->db->getСoordinates($racers[$num]);
-            if ($coordinates[$num]->life == 0) {
+        for ($num = 0; $num < count($racerIDs); $num++) {
+            $racers[$num] = $this->db->getRacerById($racerIDs[$num]);
+            if ($racers[$num]->life == 0) {
                 $dead++;
             }
         }
         if ($dead != 3 || $dead != 4) {
-            $coordinates = array();
-            $coordinates[count($racers)] = $this->ballMovement($arrival_id, $w_width, $w_height);
+            $racers = array();
+            $racers[count($racerIDs)] = $this->ballMovement($arrival_id, $w_width, $w_height);
 
-            $coordinates[count($racers) + 1] = $this->playerKillerMovement($arrival_id, $w_width, $w_height);
+            $racers[count($racerIDs) + 1] = $this->playerKillerMovement($arrival_id, $w_width, $w_height);
 
-            for ($num = 0; $num < count($racers); $num++) {
-                $coordinates[$num] = $this->db->getСoordinates($racers[$num]);
+            for ($num = 0; $num < count($racerIDs); $num++) {
+                $racers[$num] = $this->db->getRacerById($racerIDs[$num]);
 
-                if (sqrt(($coordinates[$num]->x - $coordinates[count($racers)]->x) ** 2 + ($coordinates[$num]->y - $coordinates[count($racers)]->y) ** 2) <= 35) {
+                if (sqrt(($racers[$num]->x - $racers[count($racerIDs)]->x) ** 2 + ($racers[$num]->y - $racers[count($racerIDs)]->y) ** 2) <= 35) {
                     $ball = $this->db->getBallByArrivalId($arrival_id);
                     if ($ball) {
                         $this->db->setBallCoordinates(rand(40, $w_width), rand(40, $w_height), 3, 3, $ball->id);
                     }
-                    $coin =  $coordinates[$num]->coin + 1;
-                    $this->db->setСoordinatesByRacerId($coordinates[$num]->id, $coordinates[$num]->x, $coordinates[$num]->y, $coordinates[$num]->angle, $coordinates[$num]->life, $coin);
+                    $coin =  $racers[$num]->coin + 1;
+                    $this->db->setСoordinatesByRacerId($racers[$num]->id, $racers[$num]->x, $racers[$num]->y, $racers[$num]->angle, $racers[$num]->life, $coin);
                 }
 
-                if (sqrt(($coordinates[$num]->x - $coordinates[count($racers) + 1]->x) ** 2 + ($coordinates[$num]->y - $coordinates[count($racers) + 1]->y) ** 2) <= 40) {
-                    $this->db->setСoordinatesByRacerId($coordinates[$num]->id, -200, -200, 0, 0, $coordinates[$num]->coin);
+                if (sqrt(($racers[$num]->x - $racers[count($racerIDs) + 1]->x) ** 2 + ($racers[$num]->y - $racers[count($racerIDs) + 1]->y) ** 2) <= 40) {
+                    $this->db->setСoordinatesByRacerId($racers[$num]->id, -200, -200, 0, 0, $racers[$num]->coin);
                 }
             }
         }
         //$dead = 0;
         if ($dead == 3) {
-            $coordinates[count($racers) + 2] = true;
+            $racers[count($racerIDs) + 2] = true;
             $this->db->setStatusOfArrival($arrival_id, 'ending');
-            $this->db->delete_Player_Killer($coordinates[count($racers) + 1]->id);
-            $this->db->delete_Ball($coordinates[count($racers)]->id);
+            $this->db->delete_Player_Killer($racers[count($racerIDs) + 1]->id);
+            $this->db->delete_Ball($racers[count($racerIDs)]->id);
             //sleep(10);
             $this->db->setStatusOfArrival($arrival_id, 'open');
             for ($num = 1; $num <= 4; $num++) {
@@ -192,7 +205,7 @@ class Arrival
             }
         }
 
-        return $coordinates;
+        return $racers;
     }
 
     public function ballMovement($arrival_id, $w_width, $w_height)
@@ -317,7 +330,7 @@ class Arrival
 
     public function raceCommand($command, $racerId, $w_height, $w_width)
     {
-        $coordinates = $this->db->getСoordinates($racerId);
+        $coordinates = $this->db->getRacerById($racerId);
         if ($coordinates) {
             $coin = $coordinates->coin;
             $life = $coordinates->life;

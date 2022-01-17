@@ -101,8 +101,12 @@ class DB
 
     public function getRacerByUserId($userId)
     {
-        $racer = $this->db->query("SELECT * FROM racer WHERE `user_id` = '" . $userId . "'")->fetchObject();
-        return $racer;
+        return $this->db->query("SELECT * FROM racer WHERE `user_id` = '" . $userId . "'")->fetchObject();
+    }
+
+    public function getRacerById($racerId)
+    {
+        return $this->db->query("SELECT * FROM `racer` WHERE `id` = " . $racerId . ";")->fetchObject();
     }
 
     public function removeRacer($token)
@@ -168,17 +172,19 @@ class DB
         $this->db->query("UPDATE `arrival` SET `racer_" . $racerNum . "` = NULL WHERE `arrival`.`id` = " . $arrivalId . ";");
     }
 
-    //UPDATE:
+    public function setStatusOfArrival($arrivalId, $status)
+    {
+        $this->db->query("UPDATE `arrival` SET `status` = '" . $status . "' WHERE `arrival`.`id` = '" . $arrivalId . "'");
+    }
+
+    /**************/
+    /*****game*****/
+    /**************/
     public function setStartСoordinates($racers, $x, $y)
     {
         for ($num = 0; $num < count($racers); $num++) {
             $this->db->query("UPDATE `racer` SET `x` = '" . $x[$num] . "', `y` = '" . $y . "', `life` = '1', `coin` = '0', `angle` = '0'  WHERE `id` = " . $racers[$num] . ";");
         }
-    }
-
-    public function getСoordinates($racerId)
-    {
-        return $this->db->query("SELECT * FROM `racer` WHERE `id` = " . $racerId . ";")->fetchObject();
     }
 
     public function delete_Player_Killer($player_killer_id)
@@ -189,11 +195,6 @@ class DB
     public function delete_Ball($ball_id)
     {
         $this->db->query("DELETE FROM `ball` WHERE `ball`.`id` = '" . $ball_id . "'");
-    }
-
-    public function setStatusOfArrival($arrivalId, $status)
-    {
-        $this->db->query("UPDATE `arrival` SET `status` = '" . $status . "' WHERE `arrival`.`id` = '" . $arrivalId . "'");
     }
 
     public function setСoordinatesByRacerId($racerId, $x, $y, $angle, $life, $coin)
