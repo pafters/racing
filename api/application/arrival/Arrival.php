@@ -64,13 +64,13 @@ class Arrival
                     $this->db->setСoordinatesByRacerId($racer->id, -200, -200, 0, 0, $racer->coin);
                 }
                 $num = 0;
-                if ($arrival->racer_1 == $user->id)
+                if ($arrival->racer_1 == $racer->id)
                     $num = 1;
-                else if ($arrival->racer_2 == $user->id)
+                else if ($arrival->racer_2 == $racer->id)
                     $num = 2;
-                else if ($arrival->racer_3 == $user->id)
+                else if ($arrival->racer_3 == $racer->id)
                     $num = 3;
-                else if ($arrival->racer_4 == $user->id)
+                else if ($arrival->racer_4 == $racer->id)
                     $num = 4;
             }
             if ($num) {
@@ -192,7 +192,7 @@ class Arrival
             }
         }
         //$dead = 0;
-        if ($dead == 3) {
+        if ($dead == 3 || $dead == 4) {
             $racers[count($racerIDs) + 2] = true;
             $this->db->setStatusOfArrival($arrival_id, 'ending');
             $this->db->delete_Player_Killer($racers[count($racerIDs) + 1]->id);

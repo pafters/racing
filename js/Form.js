@@ -4,7 +4,7 @@ class Form {
         this.data = data;
     }
 
-    showDiv(divId) {
+    showDiv(divId) { //createDiv
         document.getElementById('show').innerHTML = `<div id = ${divId}></div>`;
     }
     insertTemplate(divId, data) {

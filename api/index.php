@@ -22,7 +22,7 @@ function router($params)
                 case 'checkCookie':
                     return $app->checkCookie();
 
-                    //racingт
+                    //racing
                 case 'getAllRooms':
                     return $app->getAllRooms($params);
                 case 'joinArrival':
@@ -39,11 +39,12 @@ function router($params)
                     //    return $app->checkStatus();
                 case 'getRace':
                     return true;
+                    //for
                 case 'getRacers':
                     return $app->getRacers($params);
                 case 'raceCommand':
                     return $app->raceCommand($params);
-                case 'getRacerById':                    //оно называлось getСoordinates
+                case 'getRacerById':
                     return $app->getRacerById($params);
                 case 'getAllCoordinates':
                     return $app->getAllCoordinates($params);
@@ -53,8 +54,8 @@ function router($params)
                     return $app->getBallByArrivalId($params);
                 case 'getPlayerKillerByArrivalId':
                     return $app->get_Player_Killer_By_ArrivalId($params);
-                case 'timer':
-                    $app->timer($params);
+                    //case 'timer':
+                    //    $app->timer($params);
             }
         }
         return false;
