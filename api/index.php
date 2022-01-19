@@ -22,7 +22,7 @@ function router($params)
                 case 'checkCookie':
                     return $app->checkCookie();
 
-                    //racing
+                    //for maplist
                 case 'getAllRooms':
                     return $app->getAllRooms($params);
                 case 'joinArrival':
@@ -35,11 +35,9 @@ function router($params)
                     return $app->addArrival($params);       //работает
                 case 'checkStatus':
                     return $app->checkStatus($params);
-                    //case 'checkStatus':
-                    //    return $app->checkStatus();
                 case 'getRace':
                     return true;
-                    //for
+                    //for game
                 case 'getRacers':
                     return $app->getRacers($params);
                 case 'raceCommand':

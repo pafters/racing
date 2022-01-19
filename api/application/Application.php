@@ -34,8 +34,10 @@ class Application
                 $params['login'],
                 $params['password']
             );
-            $this->lobby->addRacer($user->id);
-            return $user;
+            if ($user) {
+                $this->lobby->addRacer($user->id);
+                return $user;
+            }
         }
     }
 
