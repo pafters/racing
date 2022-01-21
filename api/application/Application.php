@@ -111,12 +111,12 @@ class Application
     {
         $user = $this->getUser($params);
         if ($user && $params['raceId']) {
-            $arrival = $this->arrival->addArrival(
+            $this->arrival->addArrival(
                 $params['name'],
                 $params['raceId']
             );
         }
-        $this->arrival->joinArrival($params['token'], $arrival->id);
+        //$this->arrival->joinArrival($params['token'], $arrival->id);
     }
 
     public function isArrivalReady()
